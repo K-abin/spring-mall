@@ -22,6 +22,7 @@ import com.mall.common.utils.StringUtils;
 public class ImageUtils {
     private static final Logger log = LoggerFactory.getLogger(ImageUtils.class);
 
+    // 根据图片路径获取图片字节数组
     public static byte[] getImage(String imagePath) {
         InputStream is = getFile(imagePath);
         try {
@@ -34,6 +35,7 @@ public class ImageUtils {
         }
     }
 
+    // 通过文件路径获取图片输入流
     public static InputStream getFile(String imagePath) {
         try {
             byte[] result = readFile(imagePath);
@@ -46,7 +48,7 @@ public class ImageUtils {
     }
 
     /**
-     * 读取文件为字节数据
+     * 读取文件为字节数据( 本地 或网络)
      *
      * @param url 地址
      * @return 字节数据

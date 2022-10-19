@@ -138,6 +138,8 @@ public class FileUtils {
         return false;
     }
 
+
+
     /**
      * 下载文件名重新编码
      *
@@ -204,7 +206,7 @@ public class FileUtils {
      * @param photoByte 图像数据
      * @return 后缀名
      */
-    public static String getFileExtendName(byte[] photoByte) {
+    public static String  getFileExtendName(byte[] photoByte) {
         String strFileExtendName = "jpg";
         if ((photoByte[0] == 71) && (photoByte[1] == 73) && (photoByte[2] == 70) && (photoByte[3] == 56)
                 && ((photoByte[4] == 55) || (photoByte[4] == 57)) && (photoByte[5] == 97)) {
