@@ -37,6 +37,8 @@ public class CommonController {
 
     private static final String FILE_DELIMETER = ",";
 
+
+    // 两个下载代码的核心代码相同，只是资源路径和现在路径不同
     /**
      * 通用下载请求
      *
@@ -46,14 +48,20 @@ public class CommonController {
     @GetMapping("/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
         try {
+            // 校验文件下载规则
             if (!FileUtils.checkAllowDownload(fileName)) {
                 throw new Exception(StringUtils.format("文件名称({})非法，不允许下载。 ", fileName));
             }
+            // 重新命名下载文件
             String realFileName = System.currentTimeMillis() + fileName.substring(fileName.indexOf("_") + 1);
+            // 获取下载路径 (使用配置类 和 yml文件配置对应，可直接使用类的属性读取配置)
             String filePath = RuoYiConfig.getDownloadPath() + fileName;
 
+            // 设置http的响应类型
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+            // 下载文件重新编码
             FileUtils.setAttachmentResponseHeader(response, realFileName);
+            // 将文件写入流
             FileUtils.writeBytes(filePath, response.getOutputStream());
             if (delete) {
                 FileUtils.deleteFile(filePath);
@@ -63,11 +71,35 @@ public class CommonController {
         }
     }
 
+    // 本地资源通用下载
+    @GetMapping("/download/resource")
+    public void resourceDownload(String resource, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try {
+            if (!FileUtils.checkAllowDownload(resource)) {
+                throw new Exception(StringUtils.format("资源文件({})非法，不允许下载。 ", resource));
+            }
+            // 本地资源路径
+            String localPath = RuoYiConfig.getProfile();
+            // 数据库资源地址
+            String downloadPath = localPath + StringUtils.substringAfter(resource, Constants.RESOURCE_PREFIX);
+            // 下载名称
+            String downloadName = StringUtils.substringAfterLast(downloadPath, "/");
+
+            // 下载核心代码
+            response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+            FileUtils.setAttachmentResponseHeader(response, downloadName);
+            FileUtils.writeBytes(downloadPath, response.getOutputStream());
+        } catch (Exception e) {
+            log.error("下载文件失败", e);
+        }
+    }
+
+    // 上传请求也是相同的核心代码，做了列表循环
     /**
      * 通用上传请求（单个）
      */
     @PostMapping("/upload")
-    public AjaxResult uploadFile(MultipartFile file) throws Exception {
+    public AjaxResult uploadFile(MultipartFile file)  {
         try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
@@ -89,14 +121,14 @@ public class CommonController {
      * 通用上传请求（多个）
      */
     @PostMapping("/uploads")
-    public AjaxResult uploadFiles(List<MultipartFile> files) throws Exception {
+    public AjaxResult uploadFiles(List<MultipartFile> files)  {
         try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
-            List<String> urls = new ArrayList<String>();
-            List<String> fileNames = new ArrayList<String>();
-            List<String> newFileNames = new ArrayList<String>();
-            List<String> originalFilenames = new ArrayList<String>();
+            List<String> urls = new ArrayList<>();
+            List<String> fileNames = new ArrayList<>();
+            List<String> newFileNames = new ArrayList<>();
+            List<String> originalFilenames = new ArrayList<>();
             for (MultipartFile file : files) {
                 // 上传并返回新文件名称
                 String fileName = FileUploadUtils.upload(filePath, file);
@@ -117,26 +149,5 @@ public class CommonController {
         }
     }
 
-    /**
-     * 本地资源通用下载
-     */
-    @GetMapping("/download/resource")
-    public void resourceDownload(String resource, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        try {
-            if (!FileUtils.checkAllowDownload(resource)) {
-                throw new Exception(StringUtils.format("资源文件({})非法，不允许下载。 ", resource));
-            }
-            // 本地资源路径
-            String localPath = RuoYiConfig.getProfile();
-            // 数据库资源地址
-            String downloadPath = localPath + StringUtils.substringAfter(resource, Constants.RESOURCE_PREFIX);
-            // 下载名称
-            String downloadName = StringUtils.substringAfterLast(downloadPath, "/");
-            response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-            FileUtils.setAttachmentResponseHeader(response, downloadName);
-            FileUtils.writeBytes(downloadPath, response.getOutputStream());
-        } catch (Exception e) {
-            log.error("下载文件失败", e);
-        }
-    }
+
 }
