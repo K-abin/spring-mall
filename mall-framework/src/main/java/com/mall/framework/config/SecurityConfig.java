@@ -25,6 +25,7 @@ import com.mall.framework.security.handle.LogoutSuccessHandlerImpl;
  * 
  * @author ruoyi
  */
+//开启权限注解
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
@@ -100,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         permitAllUrl.getUrls().forEach(url -> registry.antMatchers(url).permitAll());
 
         httpSecurity
-                // CSRF禁用，因为不使用session
+                // CSRF禁用，因为不使用session,
                 .csrf().disable()
                 // 认证失败处理类
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

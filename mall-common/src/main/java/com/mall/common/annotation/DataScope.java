@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * 数据权限过滤注解
+ * 用户登录上来能看见那些权限
  * 
  * @author ruoyi
  */
@@ -31,3 +32,8 @@ public @interface DataScope
      */
     public String permission() default "";
 }
+
+
+
+
+

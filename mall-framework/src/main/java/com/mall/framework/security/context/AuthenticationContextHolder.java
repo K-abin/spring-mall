@@ -3,11 +3,13 @@ package com.mall.framework.security.context;
 import org.springframework.security.core.Authentication;
 
 /**
- * 身份验证信息
+ * 身份验证信息 == 认证
  *
  * @author ruoyi
  */
 public class AuthenticationContextHolder {
+
+
     private static final ThreadLocal<Authentication> contextHolder = new ThreadLocal<>();
 
     public static Authentication getContext() {
